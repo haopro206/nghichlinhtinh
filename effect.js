@@ -164,38 +164,49 @@ $('document').ready(function(){
 		});
 	});
 	
-	$('#story').click(function(){
+	$('#story').click(function () {
 		$(this).fadeOut('slow');
-		$('.cake').fadeOut('fast').promise().done(function(){
+		$('.cake').fadeOut('fast').promise().done(function () {
 			$('.message').fadeIn('slow');
 		});
-		
-		var i;
-
-		function msgLoop (i) {
-			$("p:nth-child("+i+")").fadeOut('slow').delay(800).promise().done(function(){
-			i=i+1;
-			$("p:nth-child("+i+")").fadeIn('slow').delay(1000);
-			if(i==50){
-				$("p:nth-child(49)").fadeOut('slow').promise().done(function () {
-					$('.cake').fadeIn('fast');
+	
+		const paragraphs = $(".message p");
+		let currentParagraph = 0;
+	
+		function msgLoopChar(index, text) {
+			if (index < text.length) {
+				const char = $("<span>").text(text[index]).hide();
+				paragraphs.eq(currentParagraph).append(char);
+				char.fadeIn(100).promise().done(function () {
+					msgLoopChar(index + 1, text);
 				});
+			} else {
+				currentParagraph++;
+				if (currentParagraph < paragraphs.length) {
+					paragraphs.eq(currentParagraph).fadeIn('slow', function () {
+						msgLoopChar(0, $(this).text());
+					});
 				
 			}
-			else{
-				msgLoop(i);
-			}			
-
-		});
-			// body...
 		}
-		
-		msgLoop(0);
-		
+	
+		function createBalloonsEffect() {
+			const vw = $(window).width();
+			for (let i = 0; i < 5; i++) {
+				const balloon = $('<div>').addClass('balloon');
+				$("body").append(balloon);
+				balloon.css({
+					left: vw * Math.random(),
+					bottom: '-100px',
+					animation: `floatUp ${10 + Math.random() * 5}s linear infinite`,
+				});
+			}
+		}
+	
+		// Bắt đầu tạo hiệu ứng bóng bay và chữ
+		createBalloonsEffect();
+		msgLoopChar(0, $(paragraphs[currentParagraph]).text());
 	});
 });
 
-
-
-
-//alert('hello');
+	//alert('hello');
